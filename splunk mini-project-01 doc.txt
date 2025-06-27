@@ -1,0 +1,386 @@
+Step 1: Disable "Read-only" in Shared Folder Properties
+Go to the shared folder properties on the Windows host:
+
+Navigate to D:/Ethical Hacking/sharedlogs.
+
+Right-click on the folder and select Properties.
+
+Uncheck the "Read-only" checkbox:
+
+In the Attributes section, uncheck the Read-only box.
+
+Click Apply and then OK.
+
+Recheck folder permissions:
+
+Ensure that you have full permissions for the folder.
+
+🔧 Step 2: Re-mount the Shared Folder in Kali
+Unmount the shared folder (if already mounted):
+
+
+sudo umount /mnt/hgfs
+Mount the shared folder again:
+
+
+sudo vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other
+Verify the folder is accessible:
+
+ls /mnt/hgfs
+🛠️ Step 3: Try Copying the File Again
+Now, try copying the file to the shared folder again:
+
+
+sudo cp ~/auth.log /mnt/hgfs/sharedlogs/auth.log
+With the "Read-only" option disabled, this should work without the Input/output error.
+
+Let me know how it goes!
+
+
+
+
+
+
+
+
+
+
+
+
+
+NOTE: TO OPEN SPLUNK GO VIA CMD--> RUN AS ADMIN AND THEN CHANGE DIRECTORY FROM C: -> D:/splunk/bin > then execute this cmd > splunk start
+
+
+
+
+
+OTHER SPLUNK PROJECTS
+------------------------------
+
+2. 🌐 Web Server Log Analyzer
+Category: IT Operations / DevSecOps
+Use Case: Monitor real-time traffic, 404 errors, response times
+
+✅ Key Features:
+
+Ingest Apache/Nginx logs
+
+Create dashboards for:
+
+Top IPs, user agents
+
+Most visited pages
+
+Error trends (404, 500)
+
+✅ Tools/Datasets:
+
+Run a local Apache server or download sample logs
+
+Use access.log as data source
+
+✅ Why It’s Industry Worthy:
+
+Log analysis is essential for uptime monitoring, performance optimization, and threat intel
+
+3. 🌍 Suspicious IP Geolocation Tracker
+Category: Threat Intel / Blue Team
+Use Case: Track events from known bad IPs and visualize their origin
+
+✅ Key Features:
+
+Use a lookup table of known malicious IPs
+
+Match incoming log IPs against the table
+
+Visualize on a geographic map
+
+✅ Tools/Datasets:
+
+Free threat intel feeds (e.g., AbuseIPDB)
+
+Lookup table in .csv format
+
+✅ Why It’s Industry Worthy:
+
+Shows capability to integrate threat feeds and apply threat intelligence
+
+4. 🖥️ Windows Event Log Monitoring Dashboard
+Category: Endpoint Security / Blue Team
+Use Case: Track logins, USB connections, shutdowns, errors
+
+✅ Key Features:
+
+Parse logs for Event IDs (e.g., 4625 for failed logon)
+
+Build timeline charts and alerts
+
+Track user activity or policy violations
+
+✅ Tools/Datasets:
+
+Use your system’s native Windows Event Logs
+
+Configure data input via Splunk's GUI
+
+✅ Why It’s Industry Worthy:
+
+Endpoint visibility is a critical part of threat detection
+
+5. 📧 Phishing Email Detection via Header Logs
+Category: Email Security / SOC
+Use Case: Identify suspicious email senders using SMTP logs
+
+✅ Key Features:
+
+Analyze sender domains, SPF/DKIM failures
+
+Highlight domains not matching sender address
+
+Create alerts for known phishing domains
+
+✅ Tools/Datasets:
+
+Use email gateway logs or download sample SMTP logs
+
+✅ Why It’s Industry Worthy:
+
+Many breaches begin with phishing; this shows proactive monitoring
+
+6. 🛠️ System Health & Resource Monitoring
+Category: DevOps / ITOps
+Use Case: Monitor CPU, memory, disk usage and generate alerts
+
+✅ Key Features:
+
+Ingest system metrics via Splunk App for Unix/Linux or Windows
+
+Build dashboards showing resource trends
+
+Set alerts for CPU > 90% or disk full
+
+✅ Tools/Datasets:
+
+Built-in OS metrics/logs
+
+Splunk App for Infrastructure (optional)
+
+✅ Why It’s Industry Worthy:
+
+Performance and uptime monitoring are key parts of DevOps and site reliability engineering
+
+7. 🛡️ Splunk SIEM Mini-Lab
+Category: Security Operations
+Use Case: Build a lightweight SIEM that correlates multiple log sources
+
+✅ Key Features:
+
+Ingest logs from multiple simulated devices (e.g., firewall, system, app)
+
+Detect abnormal patterns (e.g., logins at odd times + data access)
+
+Create correlation rules and alerts
+
+✅ Tools/Datasets:
+
+Simulate logs with custom scripts or datasets
+
+Use built-in logs (e.g., internal logs + system logs)
+
+✅ Why It’s Industry Worthy:
+
+Simulates real SIEM workflows: ingestion → detection → alerting → dashboarding
+
+
+
+
+
+
+
+
+
+SPLUNK MINI-PROJECT-01: "Failed SSH Login Detection and Alerting with Splunk SIEM"
+--------------------------------------------------------------------------
+
+Category: Security / SIEM
+Use Case: Detect brute-force or suspicious login attempts
+
+✅ Key Features:
+
+Monitor system or application login logs
+
+Detect multiple failed login attempts from the same user or IP
+
+Create alerts and visualizations
+
+✅ Tools/Datasets:
+
+Use Windows Event Logs or /var/log/auth.log (Linux)
+
+Create SPL to filter for failed login codes
+
+✅ Why It’s Industry Worthy:
+
+Brute-force detection is a core SIEM function in SOC environments
+
+--------------------------------
+
+Step-by-Step Guide
+
+Step 1: Enable Log Collection:
+
+	Share Linux VM Logs with Host and Monitor Locally (Quick but Less Scalable)
+
+
+	✅ Shared Folder Setup: Step-by-Step Guide:
+
+		Step 0: Prerequisites
+
+		You’re using VirtualBox
+
+		Splunk is installed on your host OS (Windows/Linux)
+
+		Your Linux VM (e.g., Ubuntu) has Guest Additions installed
+
+		Step 1: Share the Log Folder from VM to Host
+			In VirtualBox:
+			Shut down your Linux VM.
+
+			Go to: VM > Settings > Shared Folders > + (Add New Folder)> Folder Path--> D:/Ethical Hacking/Sharedlogs(create a folder beforehand in the file manager)> click 			enable checkbox, and make sure read-only checkbox is unchecked. > click ok to apply the settings. > boot your Linux VM.
+		Step 2: Mount Shared Folder in Linux VM
+			sudo mkdir /mnt/sharedlogs
+			sudo mount -t fuse.vmhgfs-fuse .host:/sharedlogs /mnt/sharedlogs -o allow_other
+			ls /mnt/hgfs (checks whether the file mounted is available)--> if it shows "sharedlogs" file then it's mounted successfully.
+
+-------------------------------------------------------------------------------------------
+(IF ERROR PERSISTS)-->Fix the GPG Key Error for Kali Repositories:
+	Add the Missing GPG Key: sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ED65462EC8D5E4C5
+	sudo apt update
+-------------------------------------------------------------------------------------------
+INSTALL OPENSSH-SERVER:  sudo apt install openssh-server
+
+We need openssh-server to:
+
+	Enable SSH service
+
+	Generate real authentication logs for:
+
+		Failed login attempts
+
+		Successful logins
+
+		Brute-force detections
+
+	Push those logs into Splunk for your real-time monitoring project
+
+ENABLE AND START THE SSH SERVICE: 
+sudo systemctl enable ssh
+sudo systemctl start ssh
+CHECK THE STATUS:  sudo systemctl status ssh --->You should see something like--> Active: active (running)
+------------------------------------------------------------------------------------------
+ 		
+
+		Step 3: Export SSH Log From Kali
+			sudo journalctl -u ssh.service > ~/auth.log
+			sudo cp ~/auth.log /mnt/hgfs/sharedlogs/auth.log
+			(This will generate SSH logs and place them inside the shared folder that Splunk can access.)
+
+
+		Step 4: Add This Log File as a Data Source in Splunk
+			Open your browser → go to http://localhost:8000 (Log in to Splunk) > From the top menu: > Settings > Add Data
+			Choose: Monitor > Files & Directories > Click next
+			Set path to: D:\Ethical Hacking\kali\sharedlogs\auth.log
+			Set Source type: 
+
+			Set Host: Rath
+
+			Set Index: main (or create a new one if you prefer)
+
+			Click Review > Submit
+
+		Step 5: Verify Log Data in Splunk
+			Go to the Search & Reporting App:
+			Use this SPL in the Search & Reporting app: index=main sourcetype=syslog (You should see your auth.log entries being displayed.)
+
+
+-----------------------------------------------------------------------
+Optional: Automate Log Copying in Kali
+-----------------------------------------------------------------------
+If you're happy with the setup, automate the log copy every minute:
+
+Open crontab:
+
+sudo crontab -e
+Add this line:
+*/1 * * * * cp /var/log/auth.log /mnt/sharedlogs/auth.log
+									
+------------------------------------------------------------------------
+
+
+NOW WE GO TO Phase 1: Parse & Filter the Right Logs in the search field 
+
+		index=main source="*auth.log" "Failed password" (This will show all failed login attempts.)
+			
+			Step 1: Simulate Failed SSH Logins in Kali
+				sudo ssh invaliduser@localhost  (For the first time, fingerprint y/n arises enter yes)
+				Repeat it a few times with wrong credentials. This generates lines like: Failed password for invaliduser from 127.0.0.1 port 22 ssh2
+				(Do this with 2 more users like kai@localhost, nilash@localhost)		
+
+			Step 2: Copy auth.log to Shared Folder
+				Overwrite the old file with new logs-->
+					sudo cp /var/log/auth.log ~/auth.log
+					sudo cp ~/auth.log /mnt/hgfs/sharedlogs/auth.log
+
+			Step 3: Splunk Ingests the Log Automatically
+			(Since the Directory Monitor is already configured in Splunk for D:\Ethical Hacking\sharedlogs, it will auto-ingest auth.log.)
+
+				Wait a few seconds, then search in Splunk:  index=main "Failed password"
+						
+			[ OR if any error occur like no results, go for the below step 3: ]
+
+			Step 3:Export logs for Splunk
+				Since we need to copy logs to a file Splunk can monitor, export the output:
+
+				sudo journalctl -u ssh > ~/ssh_logs.log
+				Then copy that file to your VM shared folder: sudo cp ~/ssh_logs.log /mnt/hgfs/sharedlogs/
+
+				-----On Kali Linux (your system), auth.log does not exist by default. Instead, Kali uses journalctl for logs. So we couldn't rely on 							/var/log/auth.log.----------
+
+				NOW REPEAT STEP 1: SIMULATION OF FAILED LOGINS
+				STEP 2:Regenerate the file for Splunk:
+
+				sudo journalctl -u ssh > ~/ssh_logs.log
+				sudo cp ~/ssh_logs.log /mnt/hgfs/sharedlogs/
+
+			Step 4:Go to Splunk Search, and use:
+
+
+				index=main "Failed password"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
