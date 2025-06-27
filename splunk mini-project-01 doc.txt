@@ -1,5 +1,3 @@
-NOTE: TO OPEN SPLUNK GO VIA CMD--> RUN AS ADMIN AND THEN CHANGE DIRECTORY FROM C: -> D:/splunk/bin > then execute this cmd > splunk start
-
 SPLUNK MINI-PROJECT-01: "Failed SSH Login Detection and Alerting with Splunk SIEM"
 --------------------------------------------------------------------------
 NOTE: THIS PROJECT IS FOR UNDERSTANDING THE CONCEPT OF SIEM, AND TO HAVE A HANDS-ON EXPERIENCE. THUS THIS PROJECT HAS BEEN ATTEMPTED IN MY LOCAL MACHINE.
