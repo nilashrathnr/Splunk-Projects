@@ -1,216 +1,98 @@
-Step 1: Disable "Read-only" in Shared Folder Properties
-Go to the shared folder properties on the Windows host:
-
-Navigate to D:/Ethical Hacking/sharedlogs.
-
-Right-click on the folder and select Properties.
-
-Uncheck the "Read-only" checkbox:
-
-In the Attributes section, uncheck the Read-only box.
-
-Click Apply and then OK.
-
-Recheck folder permissions:
-
-Ensure that you have full permissions for the folder.
-
-🔧 Step 2: Re-mount the Shared Folder in Kali
-Unmount the shared folder (if already mounted):
-
-
-sudo umount /mnt/hgfs
-Mount the shared folder again:
-
-
-sudo vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other
-Verify the folder is accessible:
-
-ls /mnt/hgfs
-🛠️ Step 3: Try Copying the File Again
-Now, try copying the file to the shared folder again:
-
-
-sudo cp ~/auth.log /mnt/hgfs/sharedlogs/auth.log
-With the "Read-only" option disabled, this should work without the Input/output error.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 NOTE: TO OPEN SPLUNK GO VIA CMD--> RUN AS ADMIN AND THEN CHANGE DIRECTORY FROM C: -> D:/splunk/bin > then execute this cmd > splunk start
 
 SPLUNK MINI-PROJECT-01: "Failed SSH Login Detection and Alerting with Splunk SIEM"
 --------------------------------------------------------------------------
+NOTE: THIS PROJECT IS FOR UNDERSTANDING THE CONCEPT OF SIEM, AND TO HAVE A HANDS-ON EXPERIENCE. THUS THIS PROJECT HAS BEEN ATTEMPTED IN MY LOCAL MACHINE.
 
-Category: Security / SIEM
 Use Case: Detect brute-force or suspicious login attempts
+Summary:
+This project is useful to record application login logs, detect multiple failed login attempts from the same user or IP, and Create alerts and visualizations.
+I've used Splunk to get visualized data and do administrative tasks, and Created SPL to filter for failed login codes.
 
-✅ Key Features:
+Note: I've used Vmware which hosts Kali Linux, Splunk tool installed in Windows, and files stored in my Windows.
+Linux is used coz I did login attempts there, and stored the login attempts in a shared folder named file in the kali linux.
+So, long story short You need a VM that has an Ubuntu OS, and your local machine that is windows, and splunk to complete this project.
+--------------------------------------------------------------------------
+Step-by-Step Guideline:
 
-Monitor system or application login logs
+Phase 1: Pre-requiites
+1. Splunk Software (Can be downloaded for free(Trial Period 60 days))
+2. Virtual Machine (Can be downloaded for free)
+3. Kali Linux (Recommended, can be downloaded for free)
 
-Detect multiple failed login attempts from the same user or IP
+Phase 2: Installation
+1. Splunk should be installed in your local machine (Windows preferred)
+2. In your VM you need to do some additional works, so close the VM if it's ON.
+	2.1 Now follow these steps:
+		Go to: VM > Settings > Shared Folders > + (Add New Folder)> Folder Path--> Your system drive path/foldername (create this folder beforehand in the file manager)> click enable checkbox, and make 		sure read-only checkbox is unchecked. > click ok to apply the settings. > boot your Linux VM.
 
-Create alerts and visualizations
-
-✅ Tools/Datasets:
-
-Use Windows Event Logs or /var/log/auth.log (Linux)
-
-Create SPL to filter for failed login codes
-
-✅ Why It’s Industry Worthy:
-
-Brute-force detection is a core SIEM function in SOC environments
-
---------------------------------
-
-Step-by-Step Guide
-
-Step 1: Enable Log Collection:
-
-	Share Linux VM Logs with Host and Monitor Locally (Quick but Less Scalable)
-
-
-	✅ Shared Folder Setup: Step-by-Step Guide:
-
-		Step 0: Prerequisites
-
-		You’re using VirtualBox
-
-		Splunk is installed on your host OS (Windows/Linux)
-
-		Your Linux VM (e.g., Ubuntu) has Guest Additions installed
-
-		Step 1: Share the Log Folder from VM to Host
-			In VirtualBox:
-			Shut down your Linux VM.
-
-			Go to: VM > Settings > Shared Folders > + (Add New Folder)> Folder Path--> D:/Ethical Hacking/Sharedlogs(create a folder beforehand in the file manager)> click 			enable checkbox, and make sure read-only checkbox is unchecked. > click ok to apply the settings. > boot your Linux VM.
-		Step 2: Mount Shared Folder in Linux VM
-			sudo mkdir /mnt/sharedlogs
-			sudo mount -t fuse.vmhgfs-fuse .host:/sharedlogs /mnt/sharedlogs -o allow_other
-			ls /mnt/hgfs (checks whether the file mounted is available)--> if it shows "sharedlogs" file then it's mounted successfully.
+3. Mount Shared Folder in Linux VM
+sharedlogs is name given to the file, it's user-defined.
+		>/ sudo mkdir /mnt/sharedlogs 
+		>/ sudo mount -t fuse.vmhgfs-fuse .host:/sharedlogs /mnt/sharedlogs -o allow_other
+		>/ ls /mnt/hgfs (checks whether the file mounted is available)--> if it shows "sharedlogs" file then it's mounted successfully.
 
 -------------------------------------------------------------------------------------------
-(IF ERROR PERSISTS)-->Fix the GPG Key Error for Kali Repositories:
-	Add the Missing GPG Key: sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ED65462EC8D5E4C5
-	sudo apt update
+(IF ERROR sharelogs not shown)-->Fix the GPG Key Error for Kali Repositories:
+	Add the Missing GPG Key: 
+	>/ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ED65462EC8D5E4C5
+	>/ sudo apt update
 -------------------------------------------------------------------------------------------
-INSTALL OPENSSH-SERVER:  sudo apt install openssh-server
+Phase 3: SSH Installation in your Kali Linux (VM)
+1. INSTALL OPENSSH-SERVER: 
+	>/ sudo apt install openssh-server
 
-We need openssh-server to:
+Why we need SSH? 
+We need openssh-server to enable SSH service and generate real authentication logs for Failed login attempts, Successful logins, and Brute-force detections.
+What's next?
+Push those logs into Splunk for real-time monitoring project.
 
-	Enable SSH service
-
-	Generate real authentication logs for:
-
-		Failed login attempts
-
-		Successful logins
-
-		Brute-force detections
-
-	Push those logs into Splunk for your real-time monitoring project
-
-ENABLE AND START THE SSH SERVICE: 
-sudo systemctl enable ssh
-sudo systemctl start ssh
-CHECK THE STATUS:  sudo systemctl status ssh --->You should see something like--> Active: active (running)
+2. ENABLE AND START THE SSH SERVICE: 
+	>/sudo systemctl enable ssh
+	>/sudo systemctl start ssh
+3. CHECK THE STATUS:
+	>/ sudo systemctl status ssh 
+	You should see something like--> Active: active (running)
 ------------------------------------------------------------------------------------------
- 		
+Phase 4: SSH logins in KALI
+1. Simulate Failed SSH Logins in Kali
+	>/ sudo ssh invaliduser@localhost  (For the first time, fingerprint y/n arises enter yes)
+ 	Repeat it a few times with wrong credentials. This generates lines like: Failed password for invaliduser from 127.0.0.1 port 22 ssh2
+				(Do this with 2 more users like sample@localhost, sample2@localhost)		
 
-		Step 3: Export SSH Log From Kali
-			sudo journalctl -u ssh.service > ~/auth.log
-			sudo cp ~/auth.log /mnt/hgfs/sharedlogs/auth.log
-			(This will generate SSH logs and place them inside the shared folder that Splunk can access.)
+-----------------------------------------------------------------------------------------
+Phase 5: Export SSH log from kali to local machine
+1. Save the log output to a file:
+>/ sudo journalctl -u ssh > ~/ssh_logs.log  (ssh_logs is user defined)
+>/ cat ~/ssh_logs.log  (To confirm whether the file exists)
 
+2. Copy auth.log to Shared Folder
+>/ sudo cp ~/ssh_logs.log /mnt/hgfs/sharedlogs/
 
-		Step 4: Add This Log File as a Data Source in Splunk
-			Open your browser → go to http://localhost:8000 (Log in to Splunk) > From the top menu: > Settings > Add Data
-			Choose: Monitor > Files & Directories > Click next
-			Set path to: D:\Ethical Hacking\kali\sharedlogs\auth.log
-			Set Source type: 
+ONCE FILE IS IN yourdrive:\foldername\sharedlogs\ssh_logs.log, AND SINCE WE HAVE ALREADY CONFIGURED SPLUNK TO MONITOR THAT FOLDER, SPLUNK AUTOMATICALLY DETECTS AND UPDATES THE NEW FILE.
 
+------------------------------------------------------------------------------------------
+Phase 6: Configure Splunk to Monitor the Log File
+
+1. Open your browser → go to http://localhost:8000 (Log in to Splunk) 
+From the top menu: > Settings > Add Data > Choose: Monitor > Files & Directories > Click next
+			Set path to: yourdrivelocationwith ssh_logs.log location
+			Set Source type: Manual
 			Set Host: Rath
-
 			Set Index: main (or create a new one if you prefer)
-
 			Click Review > Submit
 
-		Step 5: Verify Log Data in Splunk
+2. Verify Log Data in Splunk:
 			Go to the Search & Reporting App:
 			Use this SPL in the Search & Reporting app: index=main sourcetype=syslog (You should see your auth.log entries being displayed.)
 
+Try this too:
+Go to Splunk Search, and use:
+                        index=main "Failed password"
 
------------------------------------------------------------------------
-Optional: Automate Log Copying in Kali
------------------------------------------------------------------------
-If you're happy with the setup, automate the log copy every minute:
+-------------------------------------------------------------------------------------------
 
-Open crontab:
-
-sudo crontab -e
-Add this line:
-*/1 * * * * cp /var/log/auth.log /mnt/sharedlogs/auth.log
-									
-------------------------------------------------------------------------
-
-
-NOW WE GO TO Phase 1: Parse & Filter the Right Logs in the search field 
-
-		index=main source="*auth.log" "Failed password" (This will show all failed login attempts.)
-			
-			Step 1: Simulate Failed SSH Logins in Kali
-				sudo ssh invaliduser@localhost  (For the first time, fingerprint y/n arises enter yes)
-				Repeat it a few times with wrong credentials. This generates lines like: Failed password for invaliduser from 127.0.0.1 port 22 ssh2
-				(Do this with 2 more users like kai@localhost, nilash@localhost)		
-
-			Step 2: Copy auth.log to Shared Folder
-				Overwrite the old file with new logs-->
-					sudo cp /var/log/auth.log ~/auth.log
-					sudo cp ~/auth.log /mnt/hgfs/sharedlogs/auth.log
-
-			Step 3: Splunk Ingests the Log Automatically
-			(Since the Directory Monitor is already configured in Splunk for D:\Ethical Hacking\sharedlogs, it will auto-ingest auth.log.)
-
-				Wait a few seconds, then search in Splunk:  index=main "Failed password"
-						
-			[ OR if any error occur like no results, go for the below step 3: ]
-
-			Step 3:Export logs for Splunk
-				Since we need to copy logs to a file Splunk can monitor, export the output:
-
-				sudo journalctl -u ssh > ~/ssh_logs.log
-				Then copy that file to your VM shared folder: sudo cp ~/ssh_logs.log /mnt/hgfs/sharedlogs/
-
-				-----On Kali Linux (your system), auth.log does not exist by default. Instead, Kali uses journalctl for logs. So we couldn't rely on 							/var/log/auth.log.----------
-
-				NOW REPEAT STEP 1: SIMULATION OF FAILED LOGINS
-				STEP 2:Regenerate the file for Splunk:
-
-				sudo journalctl -u ssh > ~/ssh_logs.log
-				sudo cp ~/ssh_logs.log /mnt/hgfs/sharedlogs/
-
-			Step 4:Go to Splunk Search, and use:
-
-
-				index=main "Failed password"
-
-
-
-
-
+SIMULATION OF FAILED LOGIN DETECTION SYSTEM USING SPLUNK IS SUCCESSFULLY FINISHED! 
 
 
 
