@@ -1,0 +1,1 @@
+This repo is solely based on Splunk projects, which I just started to learn. I'll be posting some projects related to splunk in this repo. Make sure to follow the steps given in the file, and if you find any mistakes or any efficient way, do ping I'll see to it.
